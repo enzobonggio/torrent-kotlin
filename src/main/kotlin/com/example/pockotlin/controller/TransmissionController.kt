@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 
 @RestController
 class TransmissionController {
@@ -18,12 +16,12 @@ class TransmissionController {
     private lateinit var transmissionService: TransmissionService
 
     @GetMapping("/torrents")
-    fun get(): Flux<Transmission.Torrent> {
+    suspend fun get(): List<Transmission.Torrent> {
         return transmissionService.getTorrents()
     }
 
     @PostMapping("/torrents")
-    fun add(@RequestBody torrent: AddTorrentDTO): Mono<Transmission.TorrentInfo> {
+    suspend fun add(@RequestBody torrent: AddTorrentDTO): Transmission.TorrentInfo? {
         return transmissionService.addTorrent(torrent.url)
     }
 }

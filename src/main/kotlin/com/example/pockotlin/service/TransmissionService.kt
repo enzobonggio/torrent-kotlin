@@ -8,11 +8,11 @@ import reactor.core.publisher.Mono
 
 @Service
 class TransmissionService(private val transmissionRepository: TransmissionRepository) {
-    fun getTorrents(): Flux<Transmission.Torrent> {
+    suspend fun getTorrents(): List<Transmission.Torrent> {
         return transmissionRepository.get()
     }
 
-    fun addTorrent(url: String): Mono<Transmission.TorrentInfo> {
+    suspend fun addTorrent(url: String): Transmission.TorrentInfo? {
         return transmissionRepository.add(url)
     }
 

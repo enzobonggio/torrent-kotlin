@@ -5,7 +5,6 @@ import com.example.pockotlin.service.MovieService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
-import reactor.core.publisher.Flux
 
 @RestController
 class MovieController {
@@ -14,7 +13,7 @@ class MovieController {
     private lateinit var movieService: MovieService
 
     @GetMapping("/movies")
-    fun get2(): Flux<Yifi.Movie> {
+    suspend fun get2(): List<Yifi.Movie> {
         return movieService.get()
     }
 }

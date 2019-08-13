@@ -4,7 +4,8 @@ import com.example.pockotlin.model.Yifi
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.core.publisher.Mono
+import org.springframework.web.reactive.function.client.awaitBody
+import org.springframework.web.reactive.function.client.awaitExchange
 
 @Repository
 class MovieRepository {
@@ -20,11 +21,11 @@ class MovieRepository {
     }
 
 
-    fun get(limit: Int = 5, page: Int = 0): Mono<Yifi.MovieResponse> {
+    suspend fun get(limit: Int = 5, page: Int = 0): Yifi.MovieResponse? {
         return webClient.get()
                 .uri("list_movies.json?limit={limit}&page={page}", mapOf("limit" to limit, "page" to page))
-                .retrieve()
-                .bodyToMono(Yifi.MovieResponse::class.java)
+                .awaitExchange()
+                .awaitBody()
     }
 
 }

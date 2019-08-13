@@ -1,7 +1,7 @@
 package com.example.pockotlin
 
 import com.fasterxml.jackson.databind.Module
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+//import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
