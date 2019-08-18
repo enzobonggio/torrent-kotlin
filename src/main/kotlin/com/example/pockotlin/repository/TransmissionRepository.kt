@@ -2,39 +2,27 @@ package com.example.pockotlin.repository
 
 import com.example.pockotlin.model.Transmission
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
-import org.springframework.stereotype.Repository
 import org.springframework.web.reactive.function.BodyInserters
-import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
 import org.springframework.web.reactive.function.client.awaitExchange
-import java.lang.RuntimeException
 
-@Repository
-class TransmissionRepository {
+class TransmissionRepository(private val mapper: ObjectMapper) {
 
-    val log: Logger = LoggerFactory.getLogger(TransmissionRepository::class.java)
-
-
-    @Autowired
-    private lateinit var webclientBuilder: WebClient.Builder
-
-    @Autowired
-    private lateinit var mapper: ObjectMapper
-
+    private val log = LoggerFactory.getLogger(TransmissionRepository::class.java)
     private var sessionId: String? = null
 
     private val webClient: WebClient by lazy {
-        webclientBuilder
-                .clone()
+        WebClient.builder()
                 .baseUrl("http://localhost:9091/transmission/rpc")
+                .filter { request, filter ->
+                    log.info("Requested url {}", request.url())
+                    filter.exchange(request)
+                }
                 .build()
     }
-
 
     suspend fun get(): List<Transmission.Torrent> {
         val torrents = genericCall(Transmission.Request(
@@ -74,7 +62,6 @@ class TransmissionRepository {
                         }
             }
             checkError(response.statusCode()) -> {
-                log.error("Error in response: {}", response)
                 throw RuntimeException("Error in response")
             }
             else -> response.awaitBody()
