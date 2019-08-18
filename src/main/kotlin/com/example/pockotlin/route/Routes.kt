@@ -9,4 +9,5 @@ fun routes(movieHandler: MovieHandler, torrentHandler: TorrentHandler) = coRoute
     POST("/movies", movieHandler::post)
     GET("/torrents", torrentHandler::get)
     POST("/torrents", torrentHandler::post)
+    DELETE("/torrents/{id}", torrentHandler::delete)
 }

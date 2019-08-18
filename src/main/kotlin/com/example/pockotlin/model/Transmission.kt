@@ -1,5 +1,6 @@
 package com.example.pockotlin.model
 
+import com.example.pockotlin.dto.TorrentDTO
 import com.fasterxml.jackson.annotation.JsonProperty
 
 class Transmission {
@@ -72,19 +73,24 @@ class Transmission {
             val uploadRatio: Number?,
             //val wanted: List<Wanted>,
             //val webseeds: List<WebSeed>,
-            val webseedsSendingToUs: Number?)
+            val webseedsSendingToUs: Number?) {
+        fun toTorrent() = TorrentDTO(
+                downloaded = files?.map { it.bytesCompleted }?.sumBy { (it ?: 0).toInt() },
+                length = files?.map { it.length }?.sumBy { (it ?: 0).toInt() },
+                name = name,
+                downloadDir = downloadDir,
+                peersConnected = peersConnected)
+    }
 
     data class File(
             val bytesCompleted: Number?,
             val length: Number?,
-            val name: String?
-    )
+            val name: String?)
 
     data class FileStat(
             val bytesCompleted: Number?,
             val wanted: Boolean?,
-            val priority: Number?
-    )
+            val priority: Number?)
 
     data class Label(val label: String?)
 
@@ -104,8 +110,7 @@ class Transmission {
             val port: Number?,
             val progress: Number?,
             val rateToClient: Number?,
-            val rateToPeer: Number?
-    )
+            val rateToPeer: Number?)
 
     data class PeersFrom(
             val fromCache: Number,
@@ -114,20 +119,7 @@ class Transmission {
             val fromLpd: Number,
             val fromLtep: Number,
             val fromPex: Number,
-            val fromTracker: Number
-    )
-
-    data class Request(
-            val arguments: Map<String, Any>,
-            val method: String,
-            val tag: Number?
-    )
-
-    data class Response(
-            val arguments: Map<String, Any>,
-            val result: String,
-            val tag: Number?
-    )
+            val fromTracker: Number)
 
     data class TorrentInfo(
             val id: Number,
@@ -139,6 +131,15 @@ class Transmission {
             val pieceCount: Number?,
             val pieceSize: Number?,
             val totalSize: Number?,
-            val torrentFile: Number?
-    )
+            val torrentFile: Number?)
+
+    data class Request(
+            val arguments: Map<String, Any>,
+            val method: String,
+            val tag: Number?)
+
+    data class Response(
+            val arguments: Map<String, Any>?,
+            val result: String,
+            val tag: Number?)
 }

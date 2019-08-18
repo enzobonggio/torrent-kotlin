@@ -31,9 +31,15 @@ class TransmissionRepository(private val mapper: ObjectMapper) {
                 1))
                 ?.arguments
                 ?.get("torrents")
-
         return mapper.convertValue(torrents, Array<Transmission.Torrent>::class.java).asList()
     }
+
+    suspend fun delete(ids: List<Number>, deleteLocalData: Boolean = true) =
+            genericCall(Transmission.Request(
+                    mapOf("ids" to ids, "delete-local-data" to deleteLocalData),
+                    "torrent-remove",
+                    1
+            ))
 
     suspend fun add(url: String): Transmission.TorrentInfo? {
         return genericCall(Transmission.Request(

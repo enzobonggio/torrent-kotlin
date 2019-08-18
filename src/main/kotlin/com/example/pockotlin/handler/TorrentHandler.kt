@@ -11,8 +11,9 @@ class TorrentHandler(private val torrentService: TorrentService) {
 
     @Suppress("UNUSED_PARAMETER")
     suspend fun get(request: ServerRequest) =
-            ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).bodyAndAwait(torrentService.getTorrents())
-    
+            ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                    .bodyAndAwait(torrentService.getTorrents())
+
     suspend fun post(request: ServerRequest): ServerResponse {
         return request.awaitBody<AddTorrentDTO>()
                 .validate()
@@ -22,5 +23,11 @@ class TorrentHandler(private val torrentService: TorrentService) {
                         ServerResponse.ok().bodyAndAwait(it)
                     } ?: ServerResponse.notFound().buildAndAwait()
                 })
+    }
+
+    suspend fun delete(request: ServerRequest): ServerResponse {
+        val id = request.pathVariable("id").toInt()
+        torrentService.deleteTorrent(id)
+        return ServerResponse.noContent().buildAndAwait()
     }
 }
