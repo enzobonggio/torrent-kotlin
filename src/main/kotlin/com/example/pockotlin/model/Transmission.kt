@@ -75,8 +75,8 @@ class Transmission {
             //val webseeds: List<WebSeed>,
             val webseedsSendingToUs: Number?) {
         fun toTorrent() = TorrentDTO(
-                downloaded = files?.map { it.bytesCompleted }?.sumBy { (it ?: 0).toInt() },
-                length = files?.map { it.length }?.sumBy { (it ?: 0).toInt() },
+                downloaded = files?.map { it.bytesCompleted }?.map { (it ?: 0L).toLong() }?.sum(),
+                length = files?.map { it.length }?.map { (it ?: 0L).toLong() }?.sum(),
                 name = name,
                 downloadDir = downloadDir,
                 peersConnected = peersConnected)

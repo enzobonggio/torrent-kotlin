@@ -18,11 +18,9 @@ class TorrentHandler(private val torrentService: TorrentService) {
         return request.awaitBody<AddTorrentDTO>()
                 .validate()
                 .awaitRightMap { torrentService.addTorrent(it.url) }
-                .awaitFold({ ServerResponse.badRequest().bodyAndAwait(it) }, {
-                    it?.let {
-                        ServerResponse.ok().bodyAndAwait(it)
-                    } ?: ServerResponse.notFound().buildAndAwait()
-                })
+                .awaitFold(
+                        { ServerResponse.badRequest().bodyAndAwait(it) },
+                        { ServerResponse.ok().bodyAndAwait(it) })
     }
 
     suspend fun delete(request: ServerRequest): ServerResponse {

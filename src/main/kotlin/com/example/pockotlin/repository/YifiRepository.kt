@@ -39,12 +39,9 @@ class YifiRepository(objectMapper: ObjectMapper) {
     }
 
 
-    suspend fun get(limit: Int = 5, page: Int = 1): Yifi.MovieResponse? =
+    suspend fun get(limit: Int = 5, page: Int = 1): Yifi.MovieResponse =
             webClient.get().uri("list_movies.json?limit={limit}&page={page}", mapOf("limit" to limit, "page" to page))
                     .awaitExchange()
                     .awaitBody<Yifi.MovieResponse>()
-                    .let {
-                        log.debug("Response from http {}", it)
-                        it
-                    }
+                    .also { log.debug("Response from http {}", it) }
 }

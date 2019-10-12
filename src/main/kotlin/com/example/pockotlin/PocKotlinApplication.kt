@@ -1,13 +1,15 @@
 package com.example.pockotlin
 
-import com.example.pockotlin.config.taskExecutor
 import com.example.pockotlin.handler.MovieHandler
 import com.example.pockotlin.handler.TorrentHandler
 import com.example.pockotlin.repository.MovieRepository
 import com.example.pockotlin.repository.TransmissionRepository
 import com.example.pockotlin.repository.YifiRepository
 import com.example.pockotlin.route.routes
-import com.example.pockotlin.service.*
+import com.example.pockotlin.service.MovieService
+import com.example.pockotlin.service.TorrentService
+import com.example.pockotlin.service.TransmissionService
+import com.example.pockotlin.service.YifiService
 import kotlinx.coroutines.FlowPreview
 import org.springframework.boot.WebApplicationType
 import org.springframework.boot.logging.LogLevel
@@ -21,8 +23,6 @@ val app = application(WebApplicationType.REACTIVE) {
         bean<YifiRepository>()
         bean<TransmissionRepository>()
         bean<MovieRepository>()
-        bean<UDPServer>()
-        bean { taskExecutor() }
     }
 
     beans {

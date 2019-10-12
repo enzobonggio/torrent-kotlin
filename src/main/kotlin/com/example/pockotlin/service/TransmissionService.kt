@@ -7,7 +7,7 @@ class TransmissionService(private val transmissionRepository: TransmissionReposi
 
     suspend fun getTorrents() = transmissionRepository.get()
 
-    suspend fun addTorrent(url: String): Transmission.TorrentInfo? =
+    suspend fun addTorrent(url: String): Transmission.TorrentInfo =
             transmissionRepository.add(url)
 
     suspend fun deleteTorrent(id: Number) =

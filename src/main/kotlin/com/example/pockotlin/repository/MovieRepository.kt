@@ -1,19 +1,21 @@
 package com.example.pockotlin.repository
 
 import com.example.pockotlin.model.Yifi.Movie
-import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.data.mongodb.core.*
 import org.springframework.data.mongodb.core.query.Criteria.where
 import org.springframework.data.mongodb.core.query.Query.query
-import org.springframework.data.mongodb.core.query.Update
 import org.springframework.data.mongodb.core.query.isEqualTo
 
 class MovieRepository(private val mongo: ReactiveFluentMongoOperations) {
 
     suspend fun count() = mongo.query<Movie>().awaitCount()
 
-    suspend fun findAll() = mongo.query<Movie>().all().collectList().awaitSingle()
+    suspend fun findAll() = mongo
+            .query<Movie>()
+            .all()
+            .sort()
+            .collectList().awaitSingle()
 
     suspend fun findOne(id: String) = mongo.query<Movie>().matching(query(where("id").isEqualTo(id))).awaitOne()
 

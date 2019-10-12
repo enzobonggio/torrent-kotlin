@@ -10,6 +10,6 @@ class YifiService(private val yifiRepository: YifiRepository) {
 
     suspend fun get(page: Int = 1, limit: Int = 5): List<Yifi.Movie> {
         val result = yifiRepository.get(page = page, limit = limit)
-        return result?.data?.movies ?: emptyList()
+        return result.data?.movies ?: emptyList()
     }
 }

@@ -28,8 +28,7 @@ class TransmissionRepository(private val mapper: ObjectMapper) {
         val torrents = genericCall(Transmission.Request(
                 mapOf<String, Any>("fields" to Transmission.Torrent::class.java.declaredFields.asList().map { it.name }),
                 "torrent-get",
-                1))
-                ?.arguments
+                1)).arguments
                 ?.get("torrents")
         return mapper.convertValue(torrents, Array<Transmission.Torrent>::class.java).asList()
     }
@@ -41,17 +40,17 @@ class TransmissionRepository(private val mapper: ObjectMapper) {
                     1
             ))
 
-    suspend fun add(url: String): Transmission.TorrentInfo? {
-        return genericCall(Transmission.Request(
+    suspend fun add(url: String): Transmission.TorrentInfo {
+        val arguments = genericCall(Transmission.Request(
                 mapOf<String, Any>("filename" to url),
                 "torrent-add",
                 2))
-                ?.arguments
-                ?.let { Pair(true, it["torrent-duplicate"] ?: it.getValue("torrent-added")) }
-                ?.let { mapper.convertValue(it.second, Transmission.TorrentInfo::class.java) }
+                .arguments ?: throw RuntimeException("Error in response")
+        return arguments.let { Pair(true, it["torrent-duplicate"] ?: it.getValue("torrent-added")) }
+                .let { mapper.convertValue(it.second, Transmission.TorrentInfo::class.java) }
     }
 
-    suspend fun genericCall(request: Transmission.Request, retries: Int = 0): Transmission.Response? {
+    private suspend fun genericCall(request: Transmission.Request, retries: Int = 0): Transmission.Response {
         val response = webClient.post()
                 .body(BodyInserters.fromObject(request))
                 .header("X-Transmission-Session-Id", sessionId ?: "")
@@ -59,13 +58,10 @@ class TransmissionRepository(private val mapper: ObjectMapper) {
 
         return when {
             checkIfRetry(response.statusCode(), retries) -> {
-                response.headers()
+                this.sessionId = response.headers()
                         .header("X-Transmission-Session-Id")
                         .firstOrNull()
-                        ?.let {
-                            this.sessionId = it
-                            return genericCall(request)
-                        }
+                genericCall(request)
             }
             checkError(response.statusCode()) -> {
                 throw RuntimeException("Error in response")
@@ -75,11 +71,11 @@ class TransmissionRepository(private val mapper: ObjectMapper) {
     }
 
 
-    fun checkIfRetry(httpStatus: HttpStatus, retries: Int): Boolean {
+    private fun checkIfRetry(httpStatus: HttpStatus, retries: Int): Boolean {
         return httpStatus == HttpStatus.CONFLICT && retries < 5
     }
 
-    fun checkError(httpStatus: HttpStatus): Boolean {
+    private fun checkError(httpStatus: HttpStatus): Boolean {
         return httpStatus.isError
     }
 
